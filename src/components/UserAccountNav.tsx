@@ -1,4 +1,6 @@
 "use client";
+
+import {LogOut} from "lucide-react";
 import { User } from "next-auth";
 import React from "react";
 import {
@@ -10,7 +12,7 @@ import {
 } from "./ui/dropdown-menu";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
-import { LogOut } from "lucide-react";
+
 import UserAvatar from "./UserAvatar";
 
 type Props = {
@@ -21,7 +23,6 @@ const UserAccountNav = ({ user }: Props) => {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger>
-                {/* user avatar */}
                 <UserAvatar user={user} />
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-white" align="end">
@@ -38,7 +39,7 @@ const UserAccountNav = ({ user }: Props) => {
 
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                    <Link href="/">Meow</Link>
+                    <Link href="/">Home</Link>
                 </DropdownMenuItem>
 
                 <DropdownMenuSeparator />
