@@ -1,29 +1,24 @@
 "use client";
-import { Game, Question } from "@prisma/client";
-import React from "react";
-import {
-    Card,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
-import { Button, buttonVariants } from "./ui/button";
-import { differenceInSeconds } from "date-fns";
-import Link from "next/link";
-import { BarChart, ChevronRight, Loader2, Timer } from "lucide-react";
-import { checkAnswerSchema, endGameSchema } from "@/schemas/questions";
-import { cn, formatTimeDelta } from "@/lib/utils";
-import MCQCounter from "./MCQCounter";
-import { useMutation } from "@tanstack/react-query";
+import {Card, CardDescription, CardHeader, CardTitle,} from "@/components/ui/card";
+import {cn, formatTimeDelta} from "@/lib/utils";
+import {checkAnswerSchema, endGameSchema} from "@/schemas/questions";
+import {Game, Question} from "@prisma/client";
+import {useMutation} from "@tanstack/react-query";
 import axios from "axios";
-import { z } from "zod";
-import { useToast } from "./ui/use-toast";
+import {differenceInSeconds} from "date-fns";
+import {BarChart, ChevronRight, Loader2, Timer} from "lucide-react";
+import Link from "next/link";
+import React from "react";
+import {z} from "zod";
+import MCQCounter from "./MCQCounter";
+import {Button, buttonVariants} from "./ui/button";
+import {useToast} from "./ui/use-toast";
 
 type Props = {
     game: Game & { questions: Pick<Question, "id" | "options" | "question">[] };
 };
 
-const MCQ = ({ game }: Props) => {
+const MCQ = ({game}: Props) => {
     const [questionIndex, setQuestionIndex] = React.useState(0);
     const [hasEnded, setHasEnded] = React.useState(false);
     const [stats, setStats] = React.useState({
@@ -43,8 +38,8 @@ const MCQ = ({ game }: Props) => {
         return JSON.parse(currentQuestion.options as string) as string[];
     }, [currentQuestion]);
 
-    const { toast } = useToast();
-    const { mutate: checkAnswer, isLoading: isChecking } = useMutation({
+    const {toast} = useToast();
+    const {mutate: checkAnswer, isLoading: isChecking} = useMutation({
         mutationFn: async () => {
             const payload: z.infer<typeof checkAnswerSchema> = {
                 questionId: currentQuestion.id,
@@ -55,7 +50,7 @@ const MCQ = ({ game }: Props) => {
         },
     });
 
-    const { mutate: endGame } = useMutation({
+    const {mutate: endGame} = useMutation({
         mutationFn: async () => {
             const payload: z.infer<typeof endGameSchema> = {
                 gameId: game.id,
@@ -76,7 +71,7 @@ const MCQ = ({ game }: Props) => {
 
     const handleNext = React.useCallback(() => {
         checkAnswer(undefined, {
-            onSuccess: ({ isCorrect }) => {
+            onSuccess: ({isCorrect}) => {
                 if (isCorrect) {
                     setStats((stats) => ({
                         ...stats,
@@ -141,10 +136,10 @@ const MCQ = ({ game }: Props) => {
                 </div>
                 <Link
                     href={`/statistics/${game.id}`}
-                    className={cn(buttonVariants({ size: "lg" }), "mt-2")}
+                    className={cn(buttonVariants({size: "lg"}), "mt-2")}
                 >
                     View Statistics
-                    <BarChart className="w-4 h-4 ml-2" />
+                    <BarChart className="w-4 h-4 ml-2"/>
                 </Link>
             </div>
         );
@@ -162,7 +157,7 @@ const MCQ = ({ game }: Props) => {
             </span>
                     </p>
                     <div className="flex self-start mt-3 text-slate-400">
-                        <Timer className="mr-2" />
+                        <Timer className="mr-2"/>
                         {formatTimeDelta(differenceInSeconds(now, game.timeStarted))}
                     </div>
                 </div>
@@ -211,8 +206,8 @@ const MCQ = ({ game }: Props) => {
                         handleNext();
                     }}
                 >
-                    {isChecking && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                    Next <ChevronRight className="w-4 h-4 ml-2" />
+                    {isChecking && <Loader2 className="w-4 h-4 mr-2 animate-spin"/>}
+                    Next <ChevronRight className="w-4 h-4 ml-2"/>
                 </Button>
             </div>
         </div>

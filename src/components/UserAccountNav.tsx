@@ -1,29 +1,34 @@
 "use client";
 
-import {LogOut} from "lucide-react";
-import { User } from "next-auth";
-import React from "react";
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
+import {LogOut} from "lucide-react";
+import type {User} from "next-auth";
+import {signOut} from "next-auth/react";
 import Link from "next/link";
-import { signOut } from "next-auth/react";
-
+import React from "react";
 import UserAvatar from "./UserAvatar";
 
 type Props = {
     user: Pick<User, "name" | "image" | "email">;
 };
 
-const UserAccountNav = ({ user }: Props) => {
+const UserAccountNav = ({user}: Props) => {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger>
-                <UserAvatar user={user} />
+                <UserAvatar
+                    className="w-10 h-10"
+                    user={{
+                        name: user.name || null,
+                        image: user.image || null,
+                    }}
+                />
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-white" align="end">
                 <div className="flex items-center justify-start gap-2 p-2">
@@ -36,22 +41,22 @@ const UserAccountNav = ({ user }: Props) => {
                         )}
                     </div>
                 </div>
-
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator/>
                 <DropdownMenuItem asChild>
-                    <Link href="/">Home</Link>
+                    <Link href="/">Meow</Link>
                 </DropdownMenuItem>
 
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator/>
+
                 <DropdownMenuItem
-                    onClick={(e) => {
-                        e.preventDefault();
+                    onSelect={(event) => {
+                        event.preventDefault();
                         signOut().catch(console.error);
                     }}
                     className="text-red-600 cursor-pointer"
                 >
-                    Sign Out
-                    <LogOut className="w-4 h-4 ml-2" />
+                    Sign out
+                    <LogOut className="w-4 h-4 ml-2 "/>
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

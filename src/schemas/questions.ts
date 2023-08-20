@@ -1,4 +1,4 @@
-import { z } from "zod";
+import {z} from "zod";
 
 export const getQuestionsSchema = z.object({
     topic: z.string(),

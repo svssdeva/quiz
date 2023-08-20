@@ -1,5 +1,5 @@
-import React from "react";
 import keyword_extractor from "keyword-extractor";
+import React from "react";
 
 type Props = {
     answer: string;
@@ -8,7 +8,7 @@ type Props = {
 
 const blank = "_____";
 
-const BlankAnswerInput = ({ answer, setBlankAnswer }: Props) => {
+const BlankAnswerInput = ({answer, setBlankAnswer}: Props) => {
     const keywords = React.useMemo(() => {
         const words = keyword_extractor.extract(answer, {
             language: "english",
@@ -29,10 +29,10 @@ const BlankAnswerInput = ({ answer, setBlankAnswer }: Props) => {
         return answerWithBlanks;
     }, [answer, keywords, setBlankAnswer]);
 
-
     return (
         <div className="flex justify-start w-full mt-4">
             <h1 className="text-xl font-semibold">
+                {/* replace the blanks with input elements */}
                 {answerWithBlanks.split(blank).map((part, index) => {
                     return (
                         <React.Fragment key={index}>

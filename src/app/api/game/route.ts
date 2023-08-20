@@ -1,22 +1,23 @@
-import { getAuthSession } from "@/lib/nextauth";
-import { NextResponse } from "next/server";
-import { quizCreationSchema } from "@/schemas/form/quiz";
+import {prisma} from "@/lib/db";
+import {getAuthSession} from "@/lib/nextauth";
+import {quizCreationSchema} from "@/schemas/forms/quiz";
 import axios from "axios";
-import { ZodError } from "zod";
-import { prisma } from "@/lib/db";
+import {NextResponse} from "next/server";
+import {z} from "zod";
+
 export async function POST(req: Request, res: Response) {
     try {
         const session = await getAuthSession();
         if (!session?.user) {
             return NextResponse.json(
+                {error: "You must be logged in to create a game."},
                 {
-                    error: "You must be logged in",
-                },
-                { status: 401 }
+                    status: 401,
+                }
             );
         }
         const body = await req.json();
-        const { amount, topic, type } = quizCreationSchema.parse(body);
+        const {topic, type, amount} = quizCreationSchema.parse(body);
         const game = await prisma.game.create({
             data: {
                 gameType: type,
@@ -25,7 +26,7 @@ export async function POST(req: Request, res: Response) {
                 topic,
             },
         });
-        await prisma.topicCount.upsert({
+        await prisma.topic_count.upsert({
             where: {
                 topic,
             },
@@ -39,30 +40,33 @@ export async function POST(req: Request, res: Response) {
                 },
             },
         });
-        const { data } = await axios.post(`${process.env.API_URL}/api/questions`, {
-            amount,
-            topic,
-            type,
-        });
+
+        const {data} = await axios.post(
+            `${process.env.API_URL as string}/api/questions`,
+            {
+                amount,
+                topic,
+                type,
+            }
+        );
+
         if (type === "mcq") {
-            console.log("deva", data.questions);
             type mcqQuestion = {
                 question: string;
                 answer: string;
                 option1: string;
                 option2: string;
                 option3: string;
-                option4: string;
             };
-            let manyData = data.questions.map((question: mcqQuestion) => {
-                let options = [
-                    question.answer,
+
+            const manyData = data.questions.map((question: mcqQuestion) => {
+                // mix up the options lol
+                const options = [
                     question.option1,
                     question.option2,
                     question.option3,
-                    question.option4,
-                ];
-                options = options.sort(() => Math.random() - 0.5);
+                    question.answer,
+                ].sort(() => Math.random() - 0.5);
                 return {
                     question: question.question,
                     answer: question.answer,
@@ -71,6 +75,7 @@ export async function POST(req: Request, res: Response) {
                     questionType: "mcq",
                 };
             });
+
             await prisma.question.createMany({
                 data: manyData,
             });
@@ -79,31 +84,89 @@ export async function POST(req: Request, res: Response) {
                 question: string;
                 answer: string;
             };
-            let manyData = data.questions.map((question: openQuestion) => {
-                return {
-                    question: question.question,
-                    answer: question.answer,
-                    gameId: game.id,
-                    questionType: "open_ended",
-                };
-            });
             await prisma.question.createMany({
-                data: manyData,
+                data: data.questions.map((question: openQuestion) => {
+                    return {
+                        question: question.question,
+                        answer: question.answer,
+                        gameId: game.id,
+                        questionType: "open_ended",
+                    };
+                }),
             });
         }
-        return NextResponse.json({
-            gameId: game.id,
-        });
+
+        return NextResponse.json({gameId: game.id}, {status: 200});
     } catch (error) {
-        if (error instanceof ZodError) {
-            return NextResponse.json({ error: error.issues }, { status: 400 });
+        if (error instanceof z.ZodError) {
+            return NextResponse.json(
+                {error: error.issues},
+                {
+                    status: 400,
+                }
+            );
+        } else {
+            return NextResponse.json(
+                {error: "An unexpected error occurred."},
+                {
+                    status: 500,
+                }
+            );
         }
-        console.error(error);
-        return NextResponse.json(
-            {
-                error: "Something went wrong",
+    }
+}
+
+export async function GET(req: Request, res: Response) {
+    try {
+        const session = await getAuthSession();
+        if (!session?.user) {
+            return NextResponse.json(
+                {error: "You must be logged in to create a game."},
+                {
+                    status: 401,
+                }
+            );
+        }
+        const url = new URL(req.url);
+        const gameId = url.searchParams.get("gameId");
+        if (!gameId) {
+            return NextResponse.json(
+                {error: "You must provide a game id."},
+                {
+                    status: 400,
+                }
+            );
+        }
+
+        const game = await prisma.game.findUnique({
+            where: {
+                id: gameId,
             },
-            { status: 500 }
+            include: {
+                questions: true,
+            },
+        });
+        if (!game) {
+            return NextResponse.json(
+                {error: "Game not found."},
+                {
+                    status: 404,
+                }
+            );
+        }
+
+        return NextResponse.json(
+            {game},
+            {
+                status: 400,
+            }
+        );
+    } catch (error) {
+        return NextResponse.json(
+            {error: "An unexpected error occurred."},
+            {
+                status: 500,
+            }
         );
     }
 }

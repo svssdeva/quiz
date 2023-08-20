@@ -1,14 +1,21 @@
+import {prisma} from "@/lib/db";
 import {PrismaAdapter} from "@next-auth/prisma-adapter";
-import {DefaultSession, getServerSession, NextAuthOptions} from "next-auth";
+import {type DefaultSession, getServerSession, type NextAuthOptions,} from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import {prisma} from "./db";
 
 declare module "next-auth" {
     interface Session extends DefaultSession {
         user: {
             id: string;
+            // ...other properties
+            // role: UserRole;
         } & DefaultSession["user"];
     }
+
+    // interface User {
+    //   // ...other properties
+    //   // role: UserRole;
+    // }
 }
 
 declare module "next-auth/jwt" {
@@ -20,21 +27,21 @@ declare module "next-auth/jwt" {
 export const authOptions: NextAuthOptions = {
     session: {
         strategy: "jwt",
-    }, callbacks: {
+    },
+    secret: process.env.NEXTAUTH_SECRET,
+    callbacks: {
         jwt: async ({token}) => {
-
             const db_user = await prisma.user.findFirst({
                 where: {
-                    // @ts-ignore
                     email: token?.email,
                 },
             });
             if (db_user) {
-                // @ts-ignore
                 token.id = db_user.id;
             }
             return token;
-        }, session: ({session, token}) => {
+        },
+        session: ({session, token}) => {
             if (token) {
                 session.user.id = token.id;
                 session.user.name = token.name;
@@ -44,11 +51,13 @@ export const authOptions: NextAuthOptions = {
             return session;
         },
     },
-    secret: process.env.NEXTAUTH_SECRET,
     adapter: PrismaAdapter(prisma),
-    providers: [GoogleProvider({
-        clientId: process.env.GOOGLE_CLIENT_ID as string, clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-    })],
+    providers: [
+        GoogleProvider({
+            clientId: process.env.GOOGLE_CLIENT_ID as string,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+        }),
+    ],
 };
 
 export const getAuthSession = () => {

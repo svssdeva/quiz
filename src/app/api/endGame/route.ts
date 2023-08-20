@@ -1,11 +1,11 @@
-import { prisma } from "@/lib/db";
-import { endGameSchema } from "@/schemas/questions";
-import { NextResponse } from "next/server";
+import {prisma} from "@/lib/db";
+import {endGameSchema} from "@/schemas/questions";
+import {NextResponse} from "next/server";
 
 export async function POST(req: Request, res: Response) {
     try {
         const body = await req.json();
-        const { gameId } = endGameSchema.parse(body);
+        const {gameId} = endGameSchema.parse(body);
 
         const game = await prisma.game.findUnique({
             where: {
@@ -38,7 +38,7 @@ export async function POST(req: Request, res: Response) {
             {
                 message: "Something went wrong",
             },
-            { status: 500 }
+            {status: 500}
         );
     }
 }

@@ -1,7 +1,7 @@
 import MCQ from "@/components/MCQ";
-import { prisma } from "@/lib/db";
-import { getAuthSession } from "@/lib/nextauth";
-import { redirect } from "next/navigation";
+import {prisma} from "@/lib/db";
+import {getAuthSession} from "@/lib/nextauth";
+import {redirect} from "next/navigation";
 import React from "react";
 
 type Props = {
@@ -10,7 +10,7 @@ type Props = {
     };
 };
 
-const MCQPage = async ({ params: { gameId } }: Props) => {
+const MCQPage = async ({params: {gameId}}: Props) => {
     const session = await getAuthSession();
     if (!session?.user) {
         return redirect("/");
@@ -33,7 +33,7 @@ const MCQPage = async ({ params: { gameId } }: Props) => {
     if (!game || game.gameType === "open_ended") {
         return redirect("/quiz");
     }
-    return <MCQ game={game} />;
+    return <MCQ game={game}/>;
 };
 
 export default MCQPage;

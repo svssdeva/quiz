@@ -1,5 +1,5 @@
-import { prisma } from "@/lib/db";
-import { Clock, CopyCheck, Edit2 } from "lucide-react";
+import {prisma} from "@/lib/db";
+import {Clock, CopyCheck, Edit2} from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
@@ -8,11 +8,15 @@ type Props = {
     userId: string;
 };
 
-const HistoryComponent = async ({ limit, userId }: Props) => {
+const HistoryComponent = async ({limit, userId}: Props) => {
     const games = await prisma.game.findMany({
-        where: {userId},
         take: limit,
-        orderBy: {timeStarted: "desc"}
+        where: {
+            userId,
+        },
+        orderBy: {
+            timeStarted: "desc",
+        },
     });
     return (
         <div className="space-y-8">
@@ -21,16 +25,24 @@ const HistoryComponent = async ({ limit, userId }: Props) => {
                     <div className="flex items-center justify-between" key={game.id}>
                         <div className="flex items-center">
                             {game.gameType === "mcq" ? (
-                                <CopyCheck className="mr-3" />
+                                <CopyCheck className="mr-3"/>
                             ) : (
-                                <Edit2 className="mr-3" />
+                                <Edit2 className="mr-3"/>
                             )}
                             <div className="ml-4 space-y-1">
-                                <Link href={`/statistics/${game.id}`} className="text-base font-medium leading-none underline">{game.topic}</Link>
-                                <p className="flex items-center px-2 py-1 text-sm text-white rounded-lg w-fit bg-slate-800">
-                                    <Clock className="w-4 h-4 mr-1" />{new Date(game.timeStarted).toLocaleDateString()}
+                                <Link
+                                    className="text-base font-medium leading-none underline"
+                                    href={`/statistics/${game.id}`}
+                                >
+                                    {game.topic}
+                                </Link>
+                                <p className="flex items-center px-2 py-1 text-xs text-white rounded-lg w-fit bg-slate-800">
+                                    <Clock className="w-4 h-4 mr-1"/>
+                                    {new Date(game.timeEnded ?? 0).toLocaleDateString()}
                                 </p>
-                                <p className="text-sm text-muted-foreground">{game.gameType === "mcq" ? "MCQ" : "Open Ended"}</p>
+                                <p className="text-sm text-muted-foreground">
+                                    {game.gameType === "mcq" ? "Multiple Choice" : "Open-Ended"}
+                                </p>
                             </div>
                         </div>
                     </div>

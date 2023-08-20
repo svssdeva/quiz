@@ -1,4 +1,4 @@
-import { Configuration, OpenAIApi } from "openai";
+import {Configuration, OpenAIApi} from "openai";
 
 const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
@@ -18,7 +18,7 @@ export async function strict_output(
     model: string = "gpt-3.5-turbo",
     temperature: number = 1,
     num_tries: number = 3,
-    verbose: boolean = true
+    verbose: boolean = false
 ): Promise<
     {
         question: string;
@@ -60,10 +60,10 @@ export async function strict_output(
             model: model,
             messages: [
                 {
-                    role: "user",
+                    role: "system",
                     content: system_prompt + output_format_prompt + error_msg,
                 },
-                { role: "user", content: user_prompt.toString() },
+                {role: "user", content: user_prompt.toString()},
             ],
         });
 
