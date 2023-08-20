@@ -15,7 +15,7 @@ export default async function Home() {
                     <CardTitle>Welcome to Quiz App by Deva 🔥!</CardTitle>
                     <CardDescription>
                         Quiz App by Deva is a platform for creating quizzes using AI!. Get started
-                        by loggin in below!
+                        by logging in below!
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
