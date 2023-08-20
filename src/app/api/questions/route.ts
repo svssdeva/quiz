@@ -53,6 +53,8 @@ export async function POST(req: Request, res: Response) {
             }
         );
     } catch (error) {
+        console.error(error);
+        console.log(JSON.stringify(error));
         if (error instanceof ZodError) {
             return NextResponse.json(
                 {error: error.issues},
@@ -61,7 +63,7 @@ export async function POST(req: Request, res: Response) {
                 }
             );
         } else {
-            console.error("elle gpt error", error);
+            console.error("gpt error", error);
             return NextResponse.json(
                 {error: "An unexpected error occurred."},
                 {

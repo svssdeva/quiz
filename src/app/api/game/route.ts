@@ -98,6 +98,8 @@ export async function POST(req: Request, res: Response) {
 
         return NextResponse.json({gameId: game.id}, {status: 200});
     } catch (error) {
+        console.error(error);
+        console.log(JSON.stringify(error));
         if (error instanceof z.ZodError) {
             return NextResponse.json(
                 {error: error.issues},
