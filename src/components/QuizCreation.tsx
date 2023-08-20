@@ -2,7 +2,7 @@
 import React from "react";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle,} from "./ui/card";
 import { useForm } from "react-hook-form";
-import { quizCreationSchema } from "@/schemas/form/quiz";
+import { quizCreationSchema } from "@/schemas/forms/quiz";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
