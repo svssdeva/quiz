@@ -22,10 +22,13 @@ const CustomWordCloud = ({ formattedTopics }: Props) => {
                 fontSize={fontSizeMapper}
                 rotate={0}
                 padding={10}
+                // onWordMouseOver={(event, word) => {
+                //     window.alert(word.text);
+                // }}
                 onWordClick={(event, word) => {
                     router.push(`/quiz?topic=${word.text}`);
                 }}
-                fill={theme.theme == "dark" ? "white" : "black"}
+                fill={theme.theme === "light" ? "black" : "white"}
             />
         </>
     );
