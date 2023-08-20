@@ -44,7 +44,7 @@ export async function POST(req: Request, res: Response) {
             topic,
             type,
         });
-        if (type == "mcq") {
+        if (type === "mcq") {
             console.log("deva", data.questions);
             type mcqQuestion = {
                 question: string;
