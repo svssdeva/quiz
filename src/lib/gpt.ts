@@ -18,7 +18,7 @@ export async function strict_output(
     model: string = "gpt-3.5-turbo",
     temperature: number = 1,
     num_tries: number = 3,
-    verbose: boolean = false
+    verbose: boolean = true
 ): Promise<
     {
         question: string;
@@ -60,7 +60,7 @@ export async function strict_output(
             model: model,
             messages: [
                 {
-                    role: "system",
+                    role: "user",
                     content: system_prompt + output_format_prompt + error_msg,
                 },
                 {role: "user", content: user_prompt.toString()},

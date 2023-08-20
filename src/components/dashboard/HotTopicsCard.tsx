@@ -6,7 +6,7 @@ import WordCloud from "../WordCloud";
 type Props = {};
 
 const HotTopicsCard = async (props: Props) => {
-    const topics = await prisma.topic_count.findMany({});
+    const topics = await prisma.topicCount.findMany({});
     const formattedTopics = topics.map((topic) => {
         return {
             text: topic.topic,
